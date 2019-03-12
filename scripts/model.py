@@ -12,6 +12,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 
 
@@ -58,7 +59,13 @@ class VAE():
 
         # generate latent vector Q(z|X)
         x = Flatten()(x)
-        x = Dense(16, activation='relu')(x)
+        x = Dense(128, activation='relu')(x)
+        x = Dense(256, activation='relu')(x)
+        x = Dense(512, activation='relu')(x)
+        x = Dense(1024, activation='relu')(x)
+        x = Dense(512, activation='relu')(x)
+        x = Dense(256, activation='relu')(x)
+        x = Dense(128, activation='relu')(x)
         z_mean = Dense(latent_dim, name='z_mean')(x)
 
         #sampling
@@ -94,7 +101,15 @@ class VAE():
                                 activation='sigmoid',
                                 padding='same',
                                 name='decoder_output')(x)
-
+        
+        x = Dense(128, activation='relu')(x)
+        x = Dense(256, activation='relu')(x)
+        x = Dense(512, activation='relu')(x)
+        x = Dense(1024, activation='relu')(x)
+        x = Dense(512, activation='relu')(x)
+        x = Dense(256, activation='relu')(x)
+        x = Dense(128, activation='relu')(x)
+        
         # instantiate decoder model
         self.decoder = Model(latent_inputs, outputs, name='decoder')
 
@@ -133,11 +148,9 @@ class VAE():
                      x,
                      y):
         x_encoding = self.encode(x)
-        for set in [[0, 1], [0, 2], [1, 2]]:
-            plt.figure(figsize=(10, 10))
-            plt.scatter(x_encoding[:, set[0]], x_encoding[:, set[1]], c = y[:, 0], cmap='brg')
-            plt.colorbar()
-            plt.show()
+        plt.scatter(x_encoding[:, 0], x_encoding[:, 1], c = y[:, 0], marker = 'o')
+        plt.colorbar()
+
 
     def load_weights(self, path):
         self.vae.load_weights(path)
